@@ -25,7 +25,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // 4. check if any user is available of the token
-    const user = User.findById(tokenData.userId);
+    const user = await User.findById(tokenData.userId);
     if (!user)
       req.status(401).json({ status: false, message: "user not found" });
     req.user = user;

@@ -1,10 +1,12 @@
 const Post = require("../model/post");
+const User = require("../model/user");
 
 const getPost = async (req, res) => {
   try {
     //pagination
     const pageSize = req.query.pageSize || 10; //no of item per page
     const pageNo = req.query.pageNo || 1; //current page no
+    const skip = (pageNo - 1) * pageSize;
 
     // Filters
     const filterPost = {};
@@ -59,7 +61,15 @@ const getPost = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    const newPost = await Post.create(req.body);
+    console.log(req.user);
+    const newPost = await Post.create({
+      ...req.body,
+      author: req.user._id,
+    });
+    await User.findByIdAndUpdate(req.user._id),
+      {
+        $push: { posts: newPost._id },
+      };
     res.status(201).json({
       status: "success",
       message: "post created successfully",
@@ -76,6 +86,13 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     const postId = req.params.postId;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.json({
+        sucess: false,
+        message: "post not available",
+      });
+    }
     await Post.findByIdAndUpdate(postId, {
       $set: req.body,
     });
@@ -94,6 +111,13 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   try {
     const postId = req.params.postId;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.json({
+        sucess: false,
+        message: "post not available",
+      });
+    }
     //we dont delete the actual data from the DB instead we apply the flag as isActive where we store true and false
     await Post.findByIdAndUpdate(postId, {
       $set: { isActive: false },

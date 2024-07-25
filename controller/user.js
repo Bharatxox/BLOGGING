@@ -7,7 +7,7 @@ const signup = async (req, res) => {
     const salt = bcrypt.genSaltSync(10);
 
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-
+    console.log(hashedPassword);
     const newUser = await User.create({
       ...req.body,
       password: hashedPassword,
@@ -24,12 +24,14 @@ const signup = async (req, res) => {
       sucess: false,
       message: err.message,
     });
+  } finally {
+    console.log(req.body);
   }
 };
 
 const login = async (req, res) => {
   try {
-    const user = User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).json({
         sucess: false,

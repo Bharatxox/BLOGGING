@@ -66,6 +66,15 @@ This project is a simple blogging platform where users can sign up, create posts
   ```
 - The server will be running on `http://localhost:1000`.
 
+## Authentication
+
+### Login
+
+When a user logs in, a JWT token is generated. This token must be included in the headers of subsequent requests to create or update posts and comments.
+
+- **Header Key:** Authorization
+- **Header Value:** Bearer \<token\>
+
 ## API Endpoints
 
 ### User Endpoints
